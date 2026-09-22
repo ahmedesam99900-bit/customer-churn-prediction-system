@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction System</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f4f6f9; margin: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .field { display: flex; flex-direction: column; }
+        label { font-weight: 600; margin-bottom: 5px; font-size: 14px; color: #34495e; }
+        input, select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        button { grid-column: 1 / -1; margin-top: 20px; padding: 12px; background-color: #27ae60; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: #219150; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 6px; text-align: center; font-size: 18px; font-weight: bold; display: none; }
+        .churn { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .no-churn { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Customer Churn Prediction</h2>
+    <form id="churnForm">
+        <div class="grid">
+            <!-- Demographics & Account -->
+            <div class="field"><label>Gender:</label><select id="gender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+            <div class="field"><label>Senior Citizen:</label><select id="SeniorCitizen"><option value="0">0 (No)</option><option value="1">1 (Yes)</option></select></div>
+            <div class="field"><label>Partner:</label><select id="Partner"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+            <div class="field"><label>Dependents:</label><select id="Dependents"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+            <div class="field"><label>Tenure (Months):</label><input type="number" id="tenure" value="12" min="0" step="1"></div>
+
+            <!-- Services -->
+            <div class="field"><label>Phone Service:</label><select id="PhoneService"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+            <div class="field"><label>Multiple Lines:</label><select id="MultipleLines"><option value="No">No</option><option value="Yes">Yes</option><option value="No phone service">No phone service</option></select></div>
+            <div class="field"><label>Internet Service:</label><select id="InternetService"><option value="Fiber optic">Fiber optic</option><option value="DSL">DSL</option><option value="No">No</option></select></div>
+            <div class="field"><label>Online Security:</label><select id="OnlineSecurity"><option value="No">No</option><option value="Yes">Yes</option><option value="No internet service">No internet service</option></select></div>
+            <div class="field"><label>Online Backup:</label><select id="OnlineBackup"><option value="No">No</option><option value="Yes">Yes</option><option value="No internet service">No internet service</option></select></div>
+            <div class="field"><label>Device Protection:</label><select id="DeviceProtection"><option value="No">No</option><option value="Yes">Yes</option><option value="No internet service">No internet service</option></select></div>
+            <div class="field"><label>Tech Support:</label><select id="TechSupport"><option value="No">No</option><option value="Yes">Yes</option><option value="No internet service">No internet service</option></select></div>
+            <div class="field"><label>Streaming TV:</label><select id="StreamingTV"><option value="No">No</option><option value="Yes">Yes</option><option value="No internet service">No internet service</option></select></div>
+            <div class="field"><label>Streaming Movies:</label><select id="StreamingMovies"><option value="No">No</option><option value="Yes">Yes</option><option value="No internet service">No internet service</option></select></div>
+
+            <!-- Contract & Billing -->
+            <div class="field"><label>Contract:</label><select id="Contract"><option value="Month-to-month">Month-to-month</option><option value="One year">One year</option><option value="Two year">Two year</option></select></div>
+            <div class="field"><label>Paperless Billing:</label><select id="PaperlessBilling"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+            <div class="field"><label>Payment Method:</label><select id="PaymentMethod"><option value="Electronic check">Electronic check</option><option value="Mailed check">Mailed check</option><option value="Bank transfer (automatic)">Bank transfer (automatic)</option><option value="Credit card (automatic)">Credit card (automatic)</option></select></div>
+            <div class="field"><label>Monthly Charges:</label><input type="number" id="MonthlyCharges" value="70.35" step="0.01"></div>
+            <div class="field"><label>Total Charges:</label><input type="number" id="TotalCharges" value="844.20" step="0.01"></div>
+        </div>
+
+        <button type="button" onclick="makePrediction()">Predict Churn Status</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function makePrediction() {
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'none';
+
+    const payload = {
+        features: {
+            gender: document.getElementById('gender').value,
+            SeniorCitizen: parseInt(document.getElementById('SeniorCitizen').value),
+            Partner: document.getElementById('Partner').value,
+            Dependents: document.getElementById('Dependents').value,
+            tenure: parseFloat(document.getElementById('tenure').value),
+            PhoneService: document.getElementById('PhoneService').value,
+            MultipleLines: document.getElementById('MultipleLines').value,
+            InternetService: document.getElementById('InternetService').value,
+            OnlineSecurity: document.getElementById('OnlineSecurity').value,
+            OnlineBackup: document.getElementById('OnlineBackup').value,
+            DeviceProtection: document.getElementById('DeviceProtection').value,
+            TechSupport: document.getElementById('TechSupport').value,
+            StreamingTV: document.getElementById('StreamingTV').value,
+            StreamingMovies: document.getElementById('StreamingMovies').value,
+            Contract: document.getElementById('Contract').value,
+            PaperlessBilling: document.getElementById('PaperlessBilling').value,
+            PaymentMethod: document.getElementById('PaymentMethod').value,
+            MonthlyCharges: parseFloat(document.getElementById('MonthlyCharges').value),
+            TotalCharges: parseFloat(document.getElementById('TotalCharges').value)
+        }
+    };
+
+    try {
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            const probPercent = (data.churn_probability * 100).toFixed(1);
+            if (data.prediction === 1) {
+                resultDiv.className = 'churn';
+                resultDiv.innerHTML = `⚠️ Warning: Customer is likely to CHURN! (Probability: ${probPercent}%)`;
+            } else {
+                resultDiv.className = 'no-churn';
+                resultDiv.innerHTML = `✅ Customer is RETRAINED / Will Stay (Probability: ${probPercent}%)`;
+            }
+            resultDiv.style.display = 'block';
+        } else {
+            alert('Prediction error: ' + data.error);
+        }
+    } catch (err) {
+        alert('Could not connect to server. Make sure app.py is running!');
+    }
+}
+</script>
+
+</body>
+</html>

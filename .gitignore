@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging / Build artifacts
+build/
+dist/
+installer/
+*.manifest
+*.spec_backup
+
+# Installer Binaries & VC++ Runtime (Not kept in source control)
+vc_redist.x64.exe
+*.exe
+*.msi
+
+# Exceptions to allow trackable scripts if needed
+!*.spec
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE & Editor files
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
